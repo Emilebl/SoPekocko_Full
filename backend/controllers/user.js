@@ -1,11 +1,11 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const mailValidator = require('email-validator'); // Little email validation plugin that acts as a regex
-const passwordValidator = require('password-validator'); // Little password validation plugin that we configure later on
+const mailValidator = require('email-validator'); // Email validation plugin that acts as a regex
+const passwordValidator = require('password-validator'); // Password validation plugin that will be configured later
 
 const User = require('../models/User');
 
-var schema = new passwordValidator(); // And here we declare our password validation in the form of a schema
+var schema = new passwordValidator(); // Declaration of a password validation in the form of a schema
 
 schema
 .is().min(8)  // Minimum 8 characters long
@@ -13,10 +13,10 @@ schema
 .has().not().spaces();  // Password cannot have spaces
 
 exports.signup = (req, res, next) => { // Function that allows users to register an account
-  if (!mailValidator.validate(req.body.email) || (!schema.validate(req.body.password))) {  // We check email && password validity
+  if (!mailValidator.validate(req.body.email) || (!schema.validate(req.body.password))) {  // Verification of email + password validity
       throw { error: "Merci de bien vouloir entrer une adresse email et un mot de passe valide !" }  // Fails if invalid
   } else if (mailValidator.validate(req.body.email) && (schema.validate(req.body.password))) {  // If both are valid
-    bcrypt.hash(req.body.password, 10)
+    bcrypt.hash(req.body.password, 10) // Password is Hashed + salted
     .then(hash => {
       const user = new User({
         email: req.body.email,
