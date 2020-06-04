@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser'); // We need bodyParser to extract the information from HTTP requests and render it usable
 const mongoose = require('mongoose'); // We'll need the mongoose plugin to connect to the DB
 const path = require('path'); // We'll use the path plugin to upload our images
-const cors = require('cors');
+const cors = require('cors'); // This module will help us to enable CORS
 const helmet = require('helmet'); // Helmet is a very well rounded security plugin, used for many different reasons
 /* Among other things, it secures our HTTP requests, secures the Headers, controls browser DNS prefetching, prevents clickjacking,
 adds minor XSS protection and protects against MIME TYPE sniffing */
@@ -30,7 +30,7 @@ app.use((req, res, next) => { // We declare all the headers to allow :
     next();
 });
 
-app.use(cors());
+app.use(cors()); // Execution of the CORS module
 
 app.use(bodyParser.json()); // This will parse application/json type POST data
 
