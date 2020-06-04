@@ -1,35 +1,35 @@
-const Sauce = require('../models/Sauce');
-const fs = require('fs');
+const Sauce = require('../models/Sauce'); // We need the sauce model
+const fs = require('fs'); // We need the "file-system" plugin
 
-exports.createSauce = (req, res, next) => {
-    const sauceObject = JSON.parse(req.body.sauce);
-    delete sauceObject._id;
-  const sauce = new Sauce({
+exports.createSauce = (req, res, next) => { // Function to enable sauce creation
+    const sauceObject = JSON.parse(req.body.sauce); // Grab all the information inside the sauce input fields
+    delete sauceObject._id; // Remove the _id, we will get one by default from mongoDB
+  const sauce = new Sauce({ // All the input values are put into an item
       ...sauceObject,
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`, // And we add the imageUrl to the image
   });
   sauce.save()
     .then(() => res.status(201).json({message: 'Sauce enregistrée !'}))
     .catch(error => res.status(400).json({error}));
 };
 
-exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.file ?
+exports.modifySauce = (req, res, next) => { // Function to enable sauce modification
+    const sauceObject = req.file ? // We grab all the information from the selected sauce
     { 
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body }
-    Sauce.updateOne({ _id: req.params.id }, {...sauceObject, _id: req.params.id })
+    } : { ...req.body } // And then we replace the existing sauce information by whatever modifications were made
+    Sauce.updateOne({ _id: req.params.id }, {...sauceObject, _id: req.params.id })// This new information is then pushed to the DB
     .then(() => res.status(200).json({message: 'Sauce modifiée !'}))
     .catch(error => res.status(400).json({error}));
 };
 
-exports.deleteSauce = (req, res, next) => {
+exports.deleteSauce = (req, res, next) => { // Function to allow sauce deletion
     Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
-        const filename = sauce.imageUrl.split('/images/')[1];
+        const filename = sauce.imageUrl.split('/images/')[1]; // The function deletes the sauces' image from the DB
         fs.unlink(`images/${filename}`, () => {
-            Sauce.deleteOne({_id: req.params.id})
+            Sauce.deleteOne({_id: req.params.id}) // And then it deletes sauce's informations
             .then(() => res.status(200).json({message: 'Sauce supprimée !'}))
             .catch(error => res.status(400).json({error}));
         });
@@ -37,7 +37,7 @@ exports.deleteSauce = (req, res, next) => {
     .catch(error => res.status(400).json({error}));
 };
 
-exports.getOneSauce = (req, res, next) => {
+exports.getOneSauce = (req, res, next) => { // Function to load information when selecting a specific sauce
   Sauce.findOne({
     _id: req.params.id
   }).then(
@@ -53,7 +53,7 @@ exports.getOneSauce = (req, res, next) => {
   );
 };
 
-exports.getAllSauces = (req, res, next) => {
+exports.getAllSauces = (req, res, next) => { // Function that loads all existing sauces from the database and shows them on the main page
   Sauce.find().then(
     (sauces) => {
       res.status(200).json(sauces);
