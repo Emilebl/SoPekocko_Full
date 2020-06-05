@@ -35,7 +35,7 @@ const errorHandler = error => { // Error handling in case something doesn't work
   }
 };
 
-const server = http.createServer(app); // We use our app.js import to specify all our applications' information
+const server = http.createServer(app); // We use our app.js import to specify all our applicationss information
 
 server.on('error', errorHandler); // If there's an error when trying to start our server, we'll be blocked here
 server.on('listening', () => { // However if all goes well, then this chunk of code will be executed
